@@ -14,7 +14,7 @@ b, a = butter(order, normal_cutoff, btype='lowpass')
 
 # Datos muestra
 t = np.linspace(0, 1, 100)  # 1000 puntos equiespaciados en [0,1]
-data = np.sin(2*np.pi*150*t) + np.random.rand(1000)  # Señal con ruido aleatorio
+data = np.sin(2*np.pi*150*t) + np.random.rand(100)  # Señal con ruido aleatorio
 
 # Aplicamos el filtro
 filtered_data = filtfilt(b, a, data)
