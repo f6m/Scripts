@@ -1,4 +1,14 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(1, 10, 10)
+print(x)
 data = [16, 25, 47, 56, 23, 45, 19, 55, 44, 27]
+
+
+plt.stem(x, data)
+plt.show()
+
 
 tallo = {} #Define tallo como un diccionario
 
