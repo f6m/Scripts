@@ -13,3 +13,6 @@ show()
 #Como lo construye?
 #stem(close) #Coloca puntos por los valores de close
 stem(histo[0])
+#Resultados
+#Histograma cesgado a la derecha
+#Moda en [0,50000]
