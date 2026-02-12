@@ -5,10 +5,11 @@ from matplotlib.pyplot import *
 df = read_csv('/content/B2018-2025dia.csv')
 close=df['Close'] #solo la columna Close del archivo csv
 print(close.head(5))
-histo=histogram(close)
+histo=histogram(close,bins=10) #Datos a graficar 
 print(histo)
 hist(close, bins='auto')  # arguments are passed to np.histogram
-title("Histograma con 'auto' bins")
+title("Histograma con 'auto' bins") #bins = 20 para 20 bins
 show()
 #Como lo construye?
-stem(close)
+#stem(close) #Coloca puntos por los valores de close
+stem(histo[0])
