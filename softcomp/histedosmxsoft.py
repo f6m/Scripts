@@ -71,3 +71,19 @@ ax.set_ylabel("Estados de México", fontsize=12)
 
 #ax.bar_label(ax.containers[0])
 show()
+
+## Como tenemos las frecuencias podemos calcular la moda, mediana y media.
+total = sum(cn)
+
+# Frequencias acumuladas
+cum_freq = cumsum(cn)
+
+# Encontramos el indice para la mediana
+# where regresa los indices,  donde cn es maximo para la moda y donde
+#  cum_freq > total / 2 para la mediana
+moda_ind  = cn.index(max(cn))
+mediana_ind = where(cum_freq >= total / 2)[0][0]
+
+# 4. Get the median category label
+print('Moda categorica:',cc[moda_ind])
+print('Mediana categorica:',cc[mediana_ind])
