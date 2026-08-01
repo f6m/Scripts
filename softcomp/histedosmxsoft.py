@@ -50,11 +50,18 @@ cn=[ags.sum(),bc.sum(),bcs.sum(),cch.sum(),chi.sum(),chih.sum(),cdmx.sum(),co.su
     son.sum(),tb.sum(),tam.sum(),tx.sum(),vera.sum(),yu.sum(),zac.sum()]
 print(len(cn))
 print(sum(cn))
+""
 cc=['ags','bc','bcs','cch','chi','chh','cd','co','col',
     'du','gto','grr','hgo','jal','edx','mi','mo',
     'na','nl','ox','pue','qro','qr','sl','sn',
     'so','tb','tm','tx','ve','yu','za']
-    
+ ""
+cc=['Aguascalientes','Baja California','Baja California Sur','Campeche','Chiapas',
+    'Chihuahua','CDMX','Coahuila','Colima','Durango','Guanajuato','Guerrero',
+    'Hidalgo','Jalisco','EdoMex','Michoacan','Morelia','Nayarit','Nuevo León',
+    'Oaxaca','Puebla','Queretaro','Quintana Roo','San Luis','Sinaloa','Sonora',
+    'Tabasco','Tamaulipas','Tlaxcala','Veracruz','Yucatan','Zacatecas']
+
 figure(figsize=(10, 6))
 ax=barplot(x=cn/sum(cn),y=cc)
 ax.bar_label(ax.containers[0],fmt='{:.2f}')
