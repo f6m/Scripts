@@ -1,0 +1,69 @@
+from numpy import *
+from pandas import  *
+from sklearn import linear_model
+from sklearn.model_selection import train_test_split
+
+# El archivo debe estar en el contenido del collab sample_data
+f = read_csv('/content/datosregresionm.csv',encoding='latin-1')
+
+# Definimos los datos de las variables independientes
+X = f[['tdesempleomx', 'egresadossupmx']]
+Y = f['anioempnummx']
+
+print("Coeficiente de correlacion:",corrcoef(X['tdesempleomx'],X['egresadossupmx']))
+
+# Entrenamos el modelo con una particion 80% de los datos
+# para entrenacion y 20% para testear  
+X_train, X_test, Y_train, Y_test = train_test_split(
+    X, Y, test_size=0.2, random_state=42)
+
+modeloregr = linear_model.LinearRegression()
+modeloregr.fit(X_train, Y_train)
+
+#Observamos las constantes
+print("Constante interseccion en el origen:", modeloregr.intercept_)
+print("Constantes pendientes:", modeloregr.coef_)
+
+#prediciones
+y_predict = modeloregr.predict(X_test)
+print(Y_test)
+print(y_predict)
+
+# Calculamos SSE sum square error del la particion 
+# a predecir
+sse = sum((Y_test - y_predict) ** 2)
+print("SSE:", sse)
+print("SSE1:", modeloregr.score(X_test,Y_test))
+r2=modeloregr.score(X,Y)
+print("SSE2:",r2)
+
+#### para la grafica
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+
+### visualizacion ####
+x = X['tdesempleomx']
+y = X['egresadossupmx']
+
+z = Y
+
+fig = plt.figure(figsize=(9, 8))
+ax = fig.add_subplot(111, projection='3d')
+ax.view_init(elev=-50,azim=20, roll=None, vertical_axis='z', share=False)
+ax.scatter(x, y, z, color='magenta', label='Datos actuales')
+ax.legend()
+
+x1_range = linspace(x.min(), x.max(), 1000)
+x2_range = linspace(y.min(), y.max(), 1000)
+x1, x2 = meshgrid(x1_range, x2_range)
+
+z = modeloregr.predict(c_[x1.ravel(), x2.ravel()]).reshape(x1.shape)
+
+ax.plot_surface(x1, x2, z, color='red', alpha=0.3, rstride=400, cstride=100)
+
+ax.set_xlabel('Taza de ocupación')
+ax.set_ylabel('Taza de \n egresados nivel superior')
+ax.set_zlabel('Empresas(%)')
+ax.set_title('Regresion lineal - plano de mejor ajuste (3D) \n $R^2 = %.2f$' %r2, fontsize=10)
+
+plt.show()
