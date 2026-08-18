@@ -2,18 +2,20 @@ from numpy import *
 from pandas import  *
 from sklearn import linear_model
 from sklearn.model_selection import train_test_split
+from statsmodels.stats.diagnostic import normal_ad
+import scipy.stats as stats
 
 # El archivo debe estar en el contenido del collab sample_data
-f = read_csv('/content/datosregresionm.csv',encoding='latin-1')
+f = read_csv('/content/datosregresionmbivariable.csv',encoding='latin-1')
 
 # Definimos los datos de las variables independientes
-X = f[['tdesempleomx', 'egresadossupmx']]
+X = f[['anioempnumextr', 'egresadossupmx']]
 Y = f['anioempnummx']
 
-print("Coeficiente de correlacion:",corrcoef(X['tdesempleomx'],X['egresadossupmx']))
+print("Coeficiente de correlacion:",corrcoef(X['anioempnumextr'],X['egresadossupmx']))
 
 # Entrenamos el modelo con una particion 80% de los datos
-# para entrenacion y 20% para testear  
+# para entrenacion y 20% para testear
 X_train, X_test, Y_train, Y_test = train_test_split(
     X, Y, test_size=0.2, random_state=42)
 
@@ -29,27 +31,65 @@ y_predict = modeloregr.predict(X_test)
 print(Y_test)
 print(y_predict)
 
-# Calculamos SSE sum square error del la particion 
+# Calculamos SSE sum square error del la particion
 # a predecir
 sse = sum((Y_test - y_predict) ** 2)
 print("SSE:", sse)
-print("SSE1:", modeloregr.score(X_test,Y_test))
+print("SSE1:", sum((modeloregr.predict(X_train)-Y_train)**2))
 r2=modeloregr.score(X,Y)
 print("SSE2:",r2)
+
+#Revisamos si los terminos de error siguen una distribucion normal
+error_terms = modeloregr.predict(X)-Y
+print(error_terms.head())
+print("Anderson - Darling test de normalidad indice:", normal_ad(error_terms)[1])
+random.seed(43)
+stats.probplot(error_terms, dist="norm",plot=plt)
+
+plt.title("Grafica de propabilidad para la normalidad de los errores \n del modelo de regresion lineal multiple")
+plt.xlabel("Percentiles teóricos")
+plt.ylabel("Errores ordenados")
+plt.show()
+
+# Ajustamos una densidad Normal a los datos para obtener los parametros
+med, std = stats.norm.fit(error_terms)
+
+print(med,std)
+
+# Generamos x-axis puntos entre el minimo y un valor cerca del maximo
+x = linspace(error_terms.min(),error_terms.max(), 1000)
+
+# Calculamos PDF
+pdf_values = stats.norm.pdf(x,loc=med,scale=std)
+print(pdf_values)
+
+# Generamos el plot
+plt.figure(figsize=(8, 5))
+plt.plot(x, pdf_values, color='orange', linewidth=3,
+label=f'Normal PDF (scale={med:0.2f}, loc={std})')
+plt.fill_between(x, 0, pdf_values, color='blue', alpha=0.1) # Fills area under curve
+plt.hist(error_terms,density=True,label=f'Errores en el modelo de regresion lineal')
+
+# Colocamos etiquetas y mostramos
+plt.title('Ajuste de distribución Normal')
+plt.xlabel('Errores en el modelo de regresion lineal')
+plt.ylabel('Función de densidad, Frecuencias relativas')
+plt.legend()
+plt.show()
 
 #### para la grafica
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
 ### visualizacion ####
-x = X['tdesempleomx']
+x = X['anioempnumextr']
 y = X['egresadossupmx']
 
 z = Y
 
 fig = plt.figure(figsize=(9, 8))
 ax = fig.add_subplot(111, projection='3d')
-ax.view_init(elev=-50,azim=20, roll=None, vertical_axis='z', share=False)
+ax.view_init(elev=50,azim=-20, roll=None, vertical_axis='z', share=False)
 ax.scatter(x, y, z, color='magenta', label='Datos actuales')
 ax.legend()
 
@@ -61,9 +101,10 @@ z = modeloregr.predict(c_[x1.ravel(), x2.ravel()]).reshape(x1.shape)
 
 ax.plot_surface(x1, x2, z, color='red', alpha=0.3, rstride=400, cstride=100)
 
-ax.set_xlabel('Taza de ocupación')
+ax.set_xlabel('Empresas de software extranjeras \n en México (año)')
 ax.set_ylabel('Taza de \n egresados nivel superior')
 ax.set_zlabel('Empresas(%)')
 ax.set_title('Regresion lineal - plano de mejor ajuste (3D) \n $R^2 = %.2f$' %r2, fontsize=10)
 
 plt.show()
+
