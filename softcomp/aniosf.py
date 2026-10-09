@@ -1,9 +1,11 @@
 from pandas import *
 from numpy import *
-from matplotlib.pyplot import * 
+from matplotlib.pyplot import *
 from seaborn import *
-import re 
+import re
 import scipy.stats as stats
+import collections
+import plotly.graph_objects as go
 
 #El archivo debe estar en el contenido del collab sample_data
 f = read_csv('/content/empresassoftwareACT1.csv',encoding='latin-1')
@@ -14,6 +16,37 @@ f = read_csv('/content/empresassoftwareACT1.csv',encoding='latin-1')
 filterdf = f[f["Nacional"] == 'N']
 ff=filterdf['fundacion']
 print(len(ff))
+
+#Grafica de puntos para los años de fundacion de empresas mexicanas
+figure(figsize=(10,5))
+frec=collections.Counter(ff)
+xx=frec.keys()
+frecff=frec.values()
+stem(xx,frecff)
+ylabel("Frecuencias", size=12)
+xlabel("Años", size=12)
+title("Cantidad de empresas mexicanas de software \n fundadas en cada año \n relativas a la muestra")
+show()
+
+#Grafica de caja para los años de fundacion de empresas mexicanas
+#figure(figsize=(10,5))
+#boxplot(ff)
+fig=go.Figure(data=[go.Box(y=ff,
+            boxpoints='all', # can also be outliers, or suspectedoutliers, or False',
+            boxmean='sd',
+            marker_color='royalblue',
+            name="Años de fundacion - Grafica de caja",
+            jitter=0.3, # add some jitter for a better separation between points
+            pointpos=-1.5 # relative position of points wrt box
+              )])
+fig.update_layout(
+    xaxis_title="Años de fundación",
+    yaxis_title="Valores de la grafica de caja"
+    #title_text='Grafica de caja para los años de fundación de empresas mexicanas de software en la muestra'
+)
+fig.show()
+
+#histograma
 figure(figsize=(8, 5))
 ax=histplot(ff,stat="density",kde=False,cumulative=False,binwidth=3)
 # Colocamos las etiquetas
@@ -73,3 +106,4 @@ xlabel('Año de fundación (instituciones mexicanas)')
 ylabel('Función de densidad, Frecuencias relativas')
 legend()
 show()
+print("CPD(2020)=",stats.weibull_min.cdf(2020, shape,0, scale))
